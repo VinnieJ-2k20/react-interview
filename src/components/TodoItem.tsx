@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback, useState } from "react";
 import styled from "@emotion/styled";
 
 export const Wrapper = styled.label({
@@ -18,6 +18,7 @@ const Label = styled.span<{ checked: boolean }>(({ checked }) => ({
   textDecoration: checked ? "line-through" : "none",
   fontSize: 20,
   margin: 0,
+  marginRight: 8,
   display: "flex",
   flexDirection: "row",
   flexWrap: "nowrap",
@@ -34,22 +35,52 @@ const Checkbox = styled.input({
 export interface TodoItemProps {
   id: string;
   label: string;
+  toggleTodo: (todoId: string) => void;
+  deleteTodo: (todoId: string) => void;
   checked?: boolean;
 }
 
 export const TodoItem: FC<TodoItemProps> = ({
   id,
   label,
+  toggleTodo,
+  deleteTodo,
   checked = false,
 }) => {
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+
+  const showDelete = useCallback(
+    () => setIsDeleteVisible(true),
+    [],
+  );
+
+  const hideDelete = useCallback(
+    () => setIsDeleteVisible(false),
+    [],
+  );
+
   return (
-    <Wrapper>
+    <Wrapper
+      onMouseEnter={showDelete}
+      onMouseLeave={hideDelete}
+    >
       <Checkbox
         type="checkbox"
         id={id}
         checked={checked}
+        onClick={() => toggleTodo(id)}
       />
-      <Label checked={checked}>{label}</Label>
+      <Label
+        checked={checked}
+        onClick={() => toggleTodo(id)}
+
+      >
+        {label}
+      </Label>
+
+      <button onClick={() => deleteTodo(id)}>
+        X
+      </button>
     </Wrapper>
   );
 };
